@@ -5,7 +5,14 @@ var control = (function () {
   //PRIVATE METHODS
   const USER_KEY = "user";
   const MESSAGE_KEY = "body";
-  // _roomExists: (roomID)
+  
+  var _getUniques = (arr) => {
+  //from: https://coderwall.com/p/nilaba/simple-pure-javascript-array-unique-method-with-5-lines-of-code
+    return arr.filter(function (value, index, self) { 
+      return self.indexOf(value) === index;
+    });
+  };
+
   return {
     //PUBLIC METHODS
     
@@ -56,12 +63,15 @@ var control = (function () {
         return messageList;
       });
     },
+    
     getAllRooms: () => {
       var prAllRooms = new Promise((resolve, reject) => {
         redisClient.keys('*', (err, roomsArr) => {
           if (err) return reject(err);
           //split away the timestamp, leaving only roomID
-          resolve(roomsArr.map(x => (x.split(':')[0])));  
+          roomsArr = roomsArr.map(x => (x.split(':')[0]));
+          roomsArr = _getUniques(roomsArr);
+          resolve(roomsArr);  
         });
       });
       return prAllRooms;
