@@ -1,18 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-  <script src="/socket.io/socket.io.js"></script>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
   <link href="/styling.css" rel="stylesheet" type="text/css">
+  {{!--Bootstrap CSS--}}
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  
+  
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+  {{!--Bootstrap JS--}}
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  
   <title>SuperChat</title>
 </head>
 <body>
   <h1 id="greeting">SuperChat</h1>
 
   {{{body}}}
-  
+  <script>
+    var socket = io.connect("https://project-superchat-patrickklima.c9users.io/");
+    
+    $("#message-form").submit(eventObj => {
+      eventObj.preventDefault();
+      var msg = $("#message").val();
+      var currentRoom = $("#room").val();
+      console.log(currentRoom)
+      var currentUser = Cookies.get('current-user');
+      $("#message").val("");
+      socket.emit("new message", {
+        message: msg, 
+        roomID: currentRoom, 
+        user: currentUser
+      });
+      $message = $("<p></p>").text(msg);
+      $user = $("<p></p>").text(currentUser);
+      $div = $("<div></div>")
+        .addClass("message")
+        .append($user)
+        .append($message);
+      $("#current-room").append($div);
+        //   html("<p></p>").val(currentUser).
+        //   add("<p></p>").val(msg)
+        // );
+    });
+    
   </script>
 </html>

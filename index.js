@@ -9,7 +9,7 @@ app.engine('handlebars', exphbs({defaultLayout: 'main'}));
 app.set('view engine', 'handlebars');
 
 //CONTROLLER
-var control = require('./controller/control');
+var {control} = require('./controller/control');
 
 //BODY-PARSER
 const bodyParser = require("body-parser");
@@ -22,54 +22,39 @@ app.use(cookieParser());
 //REDIS-CLIENT probably only for testing
 // var {redisClient} = require("./model/redisClient");
 
+//BOOTSTRAP
+// const bootstrap = require('bootstrap');
+
 //SOCKET.IO
 const server = require('http').createServer(app);
 const io = require('socket.io')(server);
 app.use('/socket.io',express.static(__dirname + 'node_modules/socket.io-client/dist/'));
 
+io.on("connection", (socket) => {
+  socket.on("new message", (data) => {
+    console.log(data.roomID+" "+data.user+" "+data.message);
+    control.createMessage(data.roomID, data.user, data.message)
+    .then(() => {
+    
+      // socket.emit("data", )
+    });
+  });
+});
 
 //MIDDLEWARE AND RESOURCES
 app.use(express.static(`${__dirname}/public`));
 
+//ROUTES
+const rooms = require('./routes/rooms-routes');
+const users = require('./routes/users-routes');
 
+app.use('/rooms', rooms);
+app.use('/users', users);
 
-//ROUTING
-
-//-- HOME DIRECTORY
 //Presents the login form
 app.get('/', (req, res) => {
+  console.log("showing the login form");
   res.render('login');  
-});
-
-//Gets the new username and sets them as current-user with a cookie
-app.post('/', (req, res) => {
-  var user = req.body.username;
-  control.newUser(user);
-  res.redirect('/rooms', {user});
-});
-
-app.post('/:id', (req, res) => {
-  //Logs out the user by clearing their current-user cookie
-  var user = req.body.username;
-  control.removeUser(user);
-  res.redirect('/');
-});
-
-//-- ROOMS DIRECTORY
-//Gets and posts messages for a room
-app.get('/rooms/:roomID', (req, res) => {
-  var roomID = req.params.roomID;
-  var messageList = control.getRoom(roomID);
-  res.render('rooms', {
-    activeRoom: roomID,
-    messages: messageList
-  });
-});
-
-app.post('/rooms', (req, res) => {
-  var newRoomID = req.body.roomID;
-  control.createRoom(newRoomID);
-  res.redirect('rooms/:newRoomID');
 });
 
 server.listen(port);

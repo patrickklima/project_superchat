@@ -1,0 +1,14 @@
+
+<h3>Rooms List</h3>
+{{#each roomsList as |roomID|}}
+  <div class="room">
+    <p><a href="/rooms/{{roomID}}">{{roomID}}</a></p>
+  </div>
+{{/each}}
+<h4>Add a room</h4>
+<form action='/rooms' method="post">
+  Name:<br>
+  <input type="text" name="roomID" value="">
+  <br><br>
+  <input type="submit" value="Submit">
+</form> 

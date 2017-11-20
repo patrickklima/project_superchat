@@ -1,14 +1,27 @@
 body {
   font-family: Arial, sans-serif;
 }
-
 #greeting {
   color: blue;
 }
-
 #container {
   display: -webkit-flex;
   display: flex;
   -webkit-flex-direction: row;
   flex-direction: row;
+}
+.column {
+  margin: 50px;
+}
+#rooms-list {
+  width: 170px;
+}
+#room {
+  width: 320px;
+}
+#new-post {
+  width: 170px;
+}
+.red {
+  background-color: red;
 }
